@@ -4,11 +4,10 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
-
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
-class User implements UserInterface, \Serializable
+class User implements UserInterface,\Serializable
 {
     /**
      * @ORM\Id()
@@ -23,12 +22,12 @@ class User implements UserInterface, \Serializable
     private $username;
 
     /**
-     * @ORM\Column(type="string", length=55)
+     * @ORM\Column(type="string", length=45,unique=true)
      */
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=55,unique=true)
+     * @ORM\Column(type="string", length=55)
      */
     private $email;
 
@@ -37,81 +36,69 @@ class User implements UserInterface, \Serializable
         return $this->id;
     }
 
-    public function getUsername(): ?string
+    public function getUsername()
     {
         return $this->username;
     }
 
-    public function setUsername(string $username): self
+    public function setUsername($username)
     {
         $this->username = $username;
 
         return $this;
     }
 
-    public function getPassword(): ?string
+    public function getPassword()
     {
         return $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword($password)
     {
         $this->password = $password;
 
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail()
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail($email)
     {
         $this->email = $email;
 
         return $this;
     }
-
+    
     public function getRoles()
     {
-        return array('ROLE_USER');
+     return array(
+         'ROLE_USER'
+     );   
     }
-    public function getSalt()
-    {
-        return null;
-    }
-     public function eraseCredentials()
+    public function getSalt(){}
+     public function eraseCredentials(){}
+
+     public function serialize()
      {
-         
+         return serialize([
+                 $this ->id,
+                 $this ->username,
+                 $this ->email,
+                 $this ->password
+                 ]);
      }
-      /** @see \Serializable::serialize() */
-    public function serialize()
-    {
-        return serialize(array(
-            $this->id,
-            $this->username,
-            $this->password,
-            $this->email,
-            // see section on salt below
-            // $this->salt,
-        ));
-    }
-
-    /** @see \Serializable::unserialize() */
-    public function unserialize($serialized)
-    {
-        list (
-            $this->id,
-            $this->username,
-            $this->email,
-            $this->password,
-            // see section on salt below
-            // $this->salt
-        ) = unserialize($serialized, array('allowed_classes' => false));
-    }
-    
-    }
-
+     public function unserialize($string)
+     {
+       list(     
+                 $this ->id,
+                 $this ->username,
+                 $this ->email,
+                 $this ->password
+               ) = unserialize($string, ['allowed_classes' => false]);        
+     }
+}
 
 
